@@ -31,9 +31,7 @@ adopath ++ "/path/to/targetree-stata"
 If the repository becomes public, direct installation will work with:
 
 ```stata
-net install targetree, ///
-    from("https://raw.githubusercontent.com/Bill-Wang-Metrics/targetree-stata/main") ///
-    replace
+net install targetree, from("https://raw.githubusercontent.com/Bill-Wang-Metrics/targetree-stata/main") replace
 ```
 
 ## Quick start
@@ -48,8 +46,7 @@ generate double x2 = rnormal()
 generate double true_p = invlogit(x1 + x2)
 generate byte closed = runiform() < true_p
 
-targetree closed x1 x2, depth(4) minimum_portion(.05) ///
-    method(mdfs) cut(.30)
+targetree closed x1 x2, depth(4) minimum_portion(.05) method(mdfs) cut(.30)
 
 predict double closure_risk
 predict byte targeted, class
@@ -74,8 +71,7 @@ numeric cut points. Encode string variables first if needed.
 
 ```stata
 encode region_name, generate(region)
-targetree closed beds margin region, depth(4) minimum_portion(.05) ///
-    method(mdfs) cut(.35) categorical(region)
+targetree closed beds margin region, depth(4) minimum_portion(.05) method(mdfs) cut(.35) categorical(region)
 ```
 
 ## Probability-assisted fitting
@@ -83,8 +79,7 @@ targetree closed beds margin region, depth(4) minimum_portion(.05) ///
 Pass a variable containing continuous probabilities in `[0,1]` to `prob()`:
 
 ```stata
-targetree closed x1 x2, depth(4) minimum_portion(.05) ///
-    method(pfs) lbd(.5) cut(.35) prob(calibrated_probability)
+targetree closed x1 x2, depth(4) minimum_portion(.05) method(pfs) lbd(.5) cut(.35) prob(calibrated_probability)
 ```
 
 Ordinary splits and terminal estimates use the probability variable; the final
@@ -96,8 +91,7 @@ Fit on the tree-building sample, attach leaf estimates from a held-out sample,
 and request honest predictions:
 
 ```stata
-targetree closed x1 x2 if build_sample, depth(4) ///
-    minimum_portion(.05) method(mdfs) cut(.35)
+targetree closed x1 x2 if build_sample, depth(4) minimum_portion(.05) method(mdfs) cut(.35)
 targetree_honest closed if honest_sample
 predict double honest_risk, honest
 targetree_risk closed if test_sample, honest
