@@ -1,11 +1,11 @@
-*! version 0.1.1 01sep2026
+*! version 0.1.2 02sep2026
 version 16.0
 
 mata:
 
 real scalar targetree_plot_version()
 {
-    return(200)
+    return(201)
 }
 
 real scalar tr_assign_positions_v2(struct targetree_model scalar model,
@@ -72,8 +72,8 @@ void targetree_plot_data_stata_v2()
         values[node, 12] = positions[node, 2] + 0.07
         values[node, 13] = positions[node, 2] - 0.09
         if (targetree_current.nodes[node, 1]) {
-            labels[node] = sprintf("P = %6.4f", targetree_current.nodes[node, 5])
-            sublabels[node] = sprintf("N = %g", targetree_current.nodes[node, 6])
+            labels[node] = sprintf("P=%6.4f", targetree_current.nodes[node, 5])
+            sublabels[node] = sprintf("N=%g", targetree_current.nodes[node, 6])
         }
         else if (targetree_current.nodes[node, 4]) {
             catset = tr_node_catset(targetree_current, node)
@@ -102,4 +102,3 @@ void targetree_plot_data_stata_v2()
 }
 
 end
-

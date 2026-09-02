@@ -93,6 +93,71 @@ is selected automatically from the tree, or can be overridden with
 
 Run `help targetree` in Stata for full command documentation.
 
+## Replicating the Python empirical examples
+
+The package includes Stata-native copies of the two datasets used in
+`empirical_new.ipynb`. These examples use the same outcomes, predictors,
+thresholds, depths, and minimum-portion settings as the Python workflow.
+
+### Diabetes
+
+This example uses the 768-observation Pima Indians diabetes data, sets
+`Outcome` as the binary target, and uses `cut = 0.60` with depth 2.
+
+```stata
+findfile targetree_diabetes.dta
+use "`r(fn)'", clear
+targetree outcome pregnancies glucose bloodpressure skinthickness insulin bmi diabetespedigreefunction age, depth(2) minimum_portion(.02) method(cart) cut(.60)
+targetree_risk outcome
+targetree_plot, title("CART") name(diabetes_cart)
+targetree outcome pregnancies glucose bloodpressure skinthickness insulin bmi diabetespedigreefunction age, depth(2) minimum_portion(.02) method(mdfs) cut(.60)
+targetree_risk outcome
+targetree_plot, title("MDFS") name(diabetes_mdfs)
+graph combine diabetes_cart diabetes_mdfs, cols(2) title("Diabetes example")
+```
+
+The complete runnable script is
+[`targetree_diabetes_example.do`](targetree_diabetes_example.do).
+
+![CART and MDFS trees for the diabetes example](examples/figures/diabetes-comparison.png)
+
+### Forest fires
+
+This example uses the 517-observation forest-fires data, defines the target as
+`area > 5`, and uses `cut = 1/3` with depth 3.
+
+```stata
+findfile targetree_forestfires.dta
+use "`r(fn)'", clear
+generate byte fire_above_5 = area > 5
+targetree fire_above_5 x y ffmc dmc dc isi temp rh wind rain, depth(3) minimum_portion(.02) method(cart) cut(.3333333333)
+targetree_risk fire_above_5
+targetree_plot, title("CART") name(forestfires_cart)
+targetree fire_above_5 x y ffmc dmc dc isi temp rh wind rain, depth(3) minimum_portion(.02) method(mdfs) cut(.3333333333)
+targetree_risk fire_above_5
+targetree_plot, title("MDFS") name(forestfires_mdfs)
+```
+
+The complete runnable script is
+[`targetree_forestfires_example.do`](targetree_forestfires_example.do).
+
+Forest-fire CART tree:
+
+![CART tree for the forest-fires example](examples/figures/forestfires-cart.png)
+
+Forest-fire MDFS tree:
+
+![MDFS tree for the forest-fires example](examples/figures/forestfires-mdfs.png)
+
+The confusion-matrix counts reproduce the Python reference implementation:
+
+| Dataset | Method | TP | FN | FP | TN |
+|---|---|---:|---:|---:|---:|
+| Diabetes | CART | 150 | 118 | 57 | 443 |
+| Diabetes | MDFS | 150 | 118 | 57 | 443 |
+| Forest fires | CART | 38 | 113 | 26 | 340 |
+| Forest fires | MDFS | 54 | 97 | 53 | 313 |
+
 ## Development
 
 Run the certification suite in batch mode or from Stata:
