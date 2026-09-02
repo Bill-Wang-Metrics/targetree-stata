@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 0.1.0 01sep2026}{...}
+{* *! version 0.1.1 01sep2026}{...}
 {vieweralsosee "targetree" "help targetree"}{...}
 
 {title:Title}
@@ -34,4 +34,3 @@ positives, true negatives, accuracy, true-positive rate, and precision.
 {synopt:{cmd:r(accuracy)}}accuracy{p_end}
 {synopt:{cmd:r(tpr)}}true-positive rate{p_end}
 {synopt:{cmd:r(precision)}}precision{p_end}
-

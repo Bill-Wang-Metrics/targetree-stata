@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 0.1.0 01sep2026}{...}
+{* *! version 0.1.1 01sep2026}{...}
 {vieweralsosee "targetree" "help targetree"}{...}
 
 {title:Title}
@@ -17,4 +17,3 @@
 Prints the split condition at every internal node and the probability and
 sample size at every leaf. Categorical split sets are shown using the numeric
 category codes stored by Stata.
-

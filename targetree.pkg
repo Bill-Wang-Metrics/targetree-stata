@@ -13,11 +13,12 @@ f targetree_honest.ado
 f targetree_print.ado
 f targetree_plot.ado
 f _targetree_load.ado
+f _targetree_plot_load.ado
 f targetree.mata
+f targetree_plot_v2.mata
 f targetree.sthlp
 f targetree_postestimation.sthlp
 f targetree_risk.sthlp
 f targetree_honest.sthlp
 f targetree_print.sthlp
 f targetree_plot.sthlp
-

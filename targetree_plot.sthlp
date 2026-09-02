@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 0.1.0 01sep2026}{...}
+{* *! version 0.1.1 01sep2026}{...}
 {vieweralsosee "targetree" "help targetree"}{...}
 
 {title:Title}
@@ -11,7 +11,7 @@
 
 {p 8 17 2}
 {cmd:targetree_plot} [{cmd:,} {opt title(string)} {opt name(name)}
-{opt saving(filename)} {opt replace}]
+{opt saving(filename)} {opt replace} {opt xsize(#)} {opt ysize(#)}]
 
 {title:Description}
 
@@ -35,7 +35,10 @@ graph format; other suffixes are passed to {cmd:graph export}.
 {phang}
 {opt replace} permits an existing output file to be replaced.
 
+{phang}
+{opt xsize(#)} and {opt ysize(#)} set graph dimensions in inches. If omitted,
+dimensions are selected automatically from the number of leaves and tree depth.
+
 {title:Example}
 
 {phang2}{cmd:. targetree_plot, title("MDFS tree") saving("tree.gph") replace}
-

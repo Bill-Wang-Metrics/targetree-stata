@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 0.1.0 01sep2026}{...}
+{* *! version 0.1.1 01sep2026}{...}
 {vieweralsosee "targetree" "help targetree"}{...}
 
 {title:Title}
@@ -23,4 +23,3 @@ implementation. The tree structure is unchanged.
 Afterward, use {cmd:predict ..., honest} or
 {cmd:targetree_risk ..., honest}. Running this command again replaces the
 previous honest estimates.
-

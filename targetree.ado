@@ -1,4 +1,4 @@
-*! version 0.1.0 01sep2026
+*! version 0.1.1 01sep2026
 program define targetree, eclass sortpreserve
     version 16.0
     syntax varlist(min=2 numeric) [if] [in], DEPth(integer) ///

@@ -55,6 +55,10 @@ targetree_print
 targetree_plot, title("MDFS tree")
 ```
 
+The one-line model command can be pasted directly into Stata's Command window.
+Examples that use `///` for line continuation must be run together from the
+Do-file Editor; do not submit their lines separately in the Command window.
+
 ## Methods
 
 | `method()` | Default `lbd()` | Description |
@@ -105,7 +109,9 @@ targetree_plot, saving("tree.gph") replace
 ```
 
 `targetree_plot` saves Stata `.gph` files natively. It can also export formats
-supported by the local Stata installation, such as PNG, PDF, or SVG.
+supported by the local Stata installation, such as PNG, PDF, or SVG. Plot size
+is selected automatically from the tree, or can be overridden with
+`xsize()` and `ysize()`.
 
 Run `help targetree` in Stata for full command documentation.
 
@@ -116,4 +122,3 @@ Run the certification suite in batch mode or from Stata:
 ```stata
 do tests/certify.do
 ```
-

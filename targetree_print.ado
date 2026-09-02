@@ -1,4 +1,4 @@
-*! version 0.1.0 01sep2026
+*! version 0.1.1 01sep2026
 program define targetree_print
     version 16.0
     if "`e(cmd)'" != "targetree" {

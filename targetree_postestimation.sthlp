@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 0.1.0 01sep2026}{...}
+{* *! version 0.1.1 01sep2026}{...}
 {vieweralsosee "targetree" "help targetree"}{...}
 
 {title:Title}
@@ -34,4 +34,3 @@ An error is issued if honest estimates have not been attached.
 {pstd}
 See {help targetree_risk}, {help targetree_honest}, {help targetree_print}, and
 {help targetree_plot}.
-
