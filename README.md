@@ -78,28 +78,6 @@ encode region_name, generate(region)
 targetree closed beds margin region, depth(4) minimum_portion(.05) method(mdfs) cut(.35) categorical(region)
 ```
 
-## Probability-assisted fitting
-
-Pass a variable containing continuous probabilities in `[0,1]` to `prob()`:
-
-```stata
-targetree closed x1 x2, depth(4) minimum_portion(.05) method(pfs) lbd(.5) cut(.35) prob(calibrated_probability)
-```
-
-Ordinary splits and terminal estimates use the probability variable; the final
-PFS/MDFS split uses the observed outcome, matching the reference package.
-
-## Honest estimation
-
-Fit on the tree-building sample, attach leaf estimates from a held-out sample,
-and request honest predictions:
-
-```stata
-targetree closed x1 x2 if build_sample, depth(4) minimum_portion(.05) method(mdfs) cut(.35)
-targetree_honest closed if honest_sample
-predict double honest_risk, honest
-targetree_risk closed if test_sample, honest
-```
 
 ## Tree output
 
