@@ -24,6 +24,14 @@ targetree_risk fire_above_5
 targetree_print
 targetree_plot, title("MDFS") name(forestfires_mdfs)
 
-* Both graphs remain available in memory:
+* Penalized Final Split with the same lambda used in Python.
+targetree fire_above_5 `predictors', depth(3) minimum_portion(.02) ///
+    method(pfs) lbd(.5) cut(`cut')
+targetree_risk fire_above_5
+targetree_print
+targetree_plot, title("PFS (lambda = 0.5)") name(forestfires_pfs)
+
+* All three graphs remain available in memory:
 * graph display forestfires_cart
 * graph display forestfires_mdfs
+* graph display forestfires_pfs

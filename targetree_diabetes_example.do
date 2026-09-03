@@ -7,18 +7,31 @@ use "`r(fn)'", clear
 
 local predictors pregnancies glucose bloodpressure skinthickness insulin bmi ///
     diabetespedigreefunction age
+local depth 3
+local cut .60
 
 * Standard CART from the Python empirical example.
-targetree outcome `predictors', depth(2) minimum_portion(.02) method(cart) cut(.60)
+targetree outcome `predictors', depth(`depth') minimum_portion(.02) ///
+    method(cart) cut(`cut')
 targetree_risk outcome
 targetree_print
 targetree_plot, title("CART") name(diabetes_cart)
 
 * Maximum Distance Final Split from the Python empirical example.
-targetree outcome `predictors', depth(2) minimum_portion(.02) method(mdfs) cut(.60)
+targetree outcome `predictors', depth(`depth') minimum_portion(.02) ///
+    method(mdfs) cut(`cut')
 targetree_risk outcome
 targetree_print
 targetree_plot, title("MDFS") name(diabetes_mdfs)
 
-graph combine diabetes_cart diabetes_mdfs, cols(2) ///
-    title("Diabetes example") name(diabetes_comparison, replace)
+* Penalized Final Split with the same lambda used in Python.
+targetree outcome `predictors', depth(`depth') minimum_portion(.02) ///
+    method(pfs) lbd(.5) cut(`cut')
+targetree_risk outcome
+targetree_print
+targetree_plot, title("PFS (lambda = 0.5)") name(diabetes_pfs)
+
+* All three graphs remain available in memory:
+* graph display diabetes_cart
+* graph display diabetes_mdfs
+* graph display diabetes_pfs

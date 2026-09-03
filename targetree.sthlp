@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 0.1.1 01sep2026}{...}
+{* *! version 0.1.3 02sep2026}{...}
 {vieweralsosee "targetree postestimation" "help targetree_postestimation"}{...}
 {vieweralsosee "targetree_risk" "help targetree_risk"}{...}
 {vieweralsosee "targetree_honest" "help targetree_honest"}{...}
@@ -67,6 +67,10 @@ probability-assisted fitting. Ordinary splits and terminal estimates use this
 variable; the final PFS/MDFS split uses {it:depvar}.
 
 {title:Examples}
+
+{phang2}{cmd:. targetree closed beds margin quality, depth(4) minimum_portion(.05) method(pfs) lbd(.5) cut(.35)}
+{phang2}{cmd:. targetree_print}
+{phang2}{cmd:. targetree_plot, title("PFS tree")}
 
 {phang2}{cmd:. targetree closed beds margin quality, depth(4) minimum_portion(.05) method(mdfs) cut(.35)}
 {phang2}{cmd:. predict double closure_risk}

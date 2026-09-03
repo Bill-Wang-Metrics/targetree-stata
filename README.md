@@ -102,29 +102,43 @@ thresholds, depths, and minimum-portion settings as the Python workflow.
 ### Diabetes
 
 This example uses the 768-observation Pima Indians diabetes data, sets
-`Outcome` as the binary target, and uses `cut = 0.60` with depth 2.
+`Outcome` as the binary target, and uses `cut = 0.60` with depth 3. The PFS
+model uses `lbd(.5)`, matching `lbd=0.5` in the Python notebook.
 
 ```stata
 findfile targetree_diabetes.dta
 use "`r(fn)'", clear
-targetree outcome pregnancies glucose bloodpressure skinthickness insulin bmi diabetespedigreefunction age, depth(2) minimum_portion(.02) method(cart) cut(.60)
+targetree outcome pregnancies glucose bloodpressure skinthickness insulin bmi diabetespedigreefunction age, depth(3) minimum_portion(.02) method(cart) cut(.60)
 targetree_risk outcome
 targetree_plot, title("CART") name(diabetes_cart)
-targetree outcome pregnancies glucose bloodpressure skinthickness insulin bmi diabetespedigreefunction age, depth(2) minimum_portion(.02) method(mdfs) cut(.60)
+targetree outcome pregnancies glucose bloodpressure skinthickness insulin bmi diabetespedigreefunction age, depth(3) minimum_portion(.02) method(mdfs) cut(.60)
 targetree_risk outcome
 targetree_plot, title("MDFS") name(diabetes_mdfs)
-graph combine diabetes_cart diabetes_mdfs, cols(2) title("Diabetes example")
+targetree outcome pregnancies glucose bloodpressure skinthickness insulin bmi diabetespedigreefunction age, depth(3) minimum_portion(.02) method(pfs) lbd(.5) cut(.60)
+targetree_risk outcome
+targetree_plot, title("PFS (lambda = 0.5)") name(diabetes_pfs)
 ```
 
 The complete runnable script is
 [`targetree_diabetes_example.do`](targetree_diabetes_example.do).
 
-![CART and MDFS trees for the diabetes example](examples/figures/diabetes-comparison.png)
+Diabetes CART tree:
+
+![CART tree for the diabetes example](examples/figures/diabetes-cart.png)
+
+Diabetes MDFS tree:
+
+![MDFS tree for the diabetes example](examples/figures/diabetes-mdfs.png)
+
+Diabetes PFS tree (`lbd = 0.5`):
+
+![PFS tree for the diabetes example](examples/figures/diabetes-pfs.png)
 
 ### Forest fires
 
 This example uses the 517-observation forest-fires data, defines the target as
-`area > 5`, and uses `cut = 1/3` with depth 3.
+`area > 5`, and uses `cut = 1/3` with depth 3. As above, PFS uses
+`lbd(.5)`.
 
 ```stata
 findfile targetree_forestfires.dta
@@ -136,6 +150,9 @@ targetree_plot, title("CART") name(forestfires_cart)
 targetree fire_above_5 x y ffmc dmc dc isi temp rh wind rain, depth(3) minimum_portion(.02) method(mdfs) cut(.3333333333)
 targetree_risk fire_above_5
 targetree_plot, title("MDFS") name(forestfires_mdfs)
+targetree fire_above_5 x y ffmc dmc dc isi temp rh wind rain, depth(3) minimum_portion(.02) method(pfs) lbd(.5) cut(.3333333333)
+targetree_risk fire_above_5
+targetree_plot, title("PFS (lambda = 0.5)") name(forestfires_pfs)
 ```
 
 The complete runnable script is
@@ -149,14 +166,20 @@ Forest-fire MDFS tree:
 
 ![MDFS tree for the forest-fires example](examples/figures/forestfires-mdfs.png)
 
+Forest-fire PFS tree (`lbd = 0.5`):
+
+![PFS tree for the forest-fires example](examples/figures/forestfires-pfs.png)
+
 The confusion-matrix counts reproduce the Python reference implementation:
 
 | Dataset | Method | TP | FN | FP | TN |
 |---|---|---:|---:|---:|---:|
 | Diabetes | CART | 150 | 118 | 57 | 443 |
-| Diabetes | MDFS | 150 | 118 | 57 | 443 |
+| Diabetes | MDFS | 147 | 121 | 53 | 447 |
+| Diabetes | PFS (`lbd=.5`) | 158 | 110 | 61 | 439 |
 | Forest fires | CART | 38 | 113 | 26 | 340 |
 | Forest fires | MDFS | 54 | 97 | 53 | 313 |
+| Forest fires | PFS (`lbd=.5`) | 54 | 97 | 53 | 313 |
 
 ## Development
 
