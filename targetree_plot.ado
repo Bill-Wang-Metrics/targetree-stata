@@ -1,8 +1,9 @@
-*! version 0.1.1 01sep2026
+*! version 0.1.4 07sep2026
 program define targetree_plot
     version 16.0
     syntax [, TITLE(string asis) NAME(name) SAVING(string) REPLACE ///
-        XSIZE(real 0) YSIZE(real 0)]
+        XSIZE(real 0) YSIZE(real 0) FONT_size(string) ///
+        SPLIT_rule_lines(integer 2)]
     if "`e(cmd)'" != "targetree" {
         display as error "targetree estimation results not found"
         exit 301
@@ -17,13 +18,20 @@ program define targetree_plot
         "`e(indepvars)'", "`e(categorical_indices)'")
     _targetree_plot_load
 
+    if !inlist(`split_rule_lines', 1, 2) {
+        display as error "split_rule_lines() must be 1 or 2"
+        exit 198
+    }
+    local font_size = strtrim("`font_size'")
+    if "`font_size'" == "" local font_size "small"
+
     local cut_text = strtrim(string(e(cut), "%6.3g"))
     if `xsize' <= 0 local xsize = max(9, min(16, 1.25 * e(nleaves) + 1.75))
     if `ysize' <= 0 local ysize = max(6, min(12, 1.60 * (e(depth) + 1)))
 
     preserve
     clear
-    mata: targetree_plot_data_stata_v2()
+    mata: targetree_plot_data_stata_v2(`split_rule_lines')
     quietly summarize tr_x, meanonly
     local xmin = r(min) - 0.65
     local xmax = r(max) + 0.65
@@ -47,21 +55,21 @@ program define targetree_plot
         (rbar tr_box_lo tr_box_hi tr_x if tr_leaf & tr_positive, ///
             barwidth(.86) bcolor(eltblue) lcolor(ebblue) lwidth(medthin)) ///
         (scatter tr_label_y tr_x if !tr_leaf, msymbol(none) ///
-            mlabel(tr_label) mlabposition(0) mlabcolor(gs2) mlabsize(small)) ///
+            mlabel(tr_label) mlabposition(0) mlabcolor(gs2) mlabsize(`font_size')) ///
         (scatter tr_sub_y tr_x if !tr_leaf, msymbol(none) ///
-            mlabel(tr_sublabel) mlabposition(0) mlabcolor(gs5) mlabsize(vsmall)) ///
+            mlabel(tr_sublabel) mlabposition(0) mlabcolor(gs5) mlabsize(`font_size')) ///
         (scatter tr_label_y tr_x if tr_leaf & !tr_positive, msymbol(none) ///
-            mlabel(tr_label) mlabposition(0) mlabcolor(gs2) mlabsize(small)) ///
+            mlabel(tr_label) mlabposition(0) mlabcolor(gs2) mlabsize(`font_size')) ///
         (scatter tr_sub_y tr_x if tr_leaf & !tr_positive, msymbol(none) ///
-            mlabel(tr_sublabel) mlabposition(0) mlabcolor(gs5) mlabsize(vsmall)) ///
+            mlabel(tr_sublabel) mlabposition(0) mlabcolor(gs5) mlabsize(`font_size')) ///
         (scatter tr_label_y tr_x if tr_leaf & tr_positive, msymbol(none) ///
-            mlabel(tr_label) mlabposition(0) mlabcolor(white) mlabsize(small)) ///
+            mlabel(tr_label) mlabposition(0) mlabcolor(white) mlabsize(`font_size')) ///
         (scatter tr_sub_y tr_x if tr_leaf & tr_positive, msymbol(none) ///
-            mlabel(tr_sublabel) mlabposition(0) mlabcolor(white) mlabsize(vsmall)), ///
+            mlabel(tr_sublabel) mlabposition(0) mlabcolor(white) mlabsize(`font_size')), ///
         xscale(range(`xmin' `xmax') off) yscale(range(`ymin' `ymax') off) ///
         xlabel(none, nogrid) ylabel(none, nogrid) xtitle("") ytitle("") ///
         legend(order(3 "P <= `cut_text'" 4 "P > `cut_text'") rows(1) ///
-            position(6) ring(1) size(small) ///
+            position(6) ring(1) size(`font_size') ///
             region(lcolor(none) fcolor(none))) ///
         plotregion(margin(small) color(white) lcolor(none)) ///
         graphregion(color(white) margin(medsmall)) ///

@@ -1,4 +1,4 @@
-*! version 0.1.1 01sep2026
+*! version 0.1.4 07sep2026
 version 16.0
 
 mata:
@@ -21,38 +21,34 @@ targetree_current = targetree_model()
 
 real scalar targetree_version()
 {
-    return(100)
+    return(101)
 }
 
 real scalar tr_choose_index(real colvector objective,
                             real colvector left_count,
-                            real scalar n)
+                            real scalar n,
+                            real scalar min_leaf_samples)
 {
-    real scalar i, lower, upper, largest0, smallest0, start, finish
-    real colvector candidates
+    real scalar lower, upper
+    real colvector candidates, feasible, balanced, right_count
     real matrix ranked
 
-    if (rows(objective) <= 10) {
-        ranked = order((objective, (1::rows(objective))), (1, 2))
-        return(ranked[1])
+    right_count = J(rows(left_count), 1, n) - left_count
+    feasible = select((1::rows(objective)),
+        (left_count :>= min_leaf_samples) :&
+        (right_count :>= min_leaf_samples))
+    if (!rows(feasible)) return(.)
+
+    candidates = feasible
+    if (rows(objective) > 10) {
+        lower = floor(0.1 * n)
+        upper = floor(0.9 * n)
+        balanced = select(feasible,
+            (left_count[feasible] :>= lower) :&
+            (left_count[feasible] :<= upper))
+        if (rows(balanced)) candidates = balanced
     }
 
-    lower = floor(0.1 * n)
-    upper = floor(0.9 * n)
-    largest0 = 0
-    smallest0 = .
-    for (i = 1; i <= rows(left_count); i++) {
-        if (left_count[i] <= lower) largest0 = i - 1
-        else if (left_count[i] >= upper & missing(smallest0)) smallest0 = i - 1
-    }
-
-    start = largest0 + 1
-    finish = missing(smallest0) ? rows(objective) : smallest0
-    if (start > finish) {
-        ranked = order((objective, (1::rows(objective))), (1, 2))
-        return(ranked[1])
-    }
-    candidates = (start::finish)
     ranked = order((objective[candidates], candidates), (1, 2))
     return(candidates[ranked[1]])
 }
@@ -88,6 +84,7 @@ void tr_numerical_candidates(real colvector x,
 
 void tr_best_split_numerical(real colvector x,
                              real colvector y,
+                             real scalar min_leaf_samples,
                              real scalar threshold,
                              real scalar impurity)
 {
@@ -105,7 +102,8 @@ void tr_best_split_numerical(real colvector x,
     right_var = (J(rows(lc), 1, sum_y2) - lsq) :/ rc -
                 ((J(rows(lc), 1, sum_y) - ls) :/ rc):^2
     objective = (left_var :* lc + right_var :* rc) * 2
-    index = tr_choose_index(objective, lc, n)
+    index = tr_choose_index(objective, lc, n, min_leaf_samples)
+    if (missing(index)) return
     position = lc[index]
     threshold = (xs[position] + xs[position + 1]) / 2
     impurity = objective[index]
@@ -113,6 +111,7 @@ void tr_best_split_numerical(real colvector x,
 
 void tr_best_split_categorical(real colvector x,
                                real colvector y,
+                               real scalar min_leaf_samples,
                                real scalar threshold,
                                real scalar impurity,
                                real colvector catset)
@@ -151,7 +150,8 @@ void tr_best_split_categorical(real colvector x,
     right_var = (J(rows(lc), 1, sum_y2) - lsq) :/ rc -
                 ((J(rows(lc), 1, sum_y) - ls) :/ rc):^2
     objective = (left_var :* lc + right_var :* rc) * 2
-    index = tr_choose_index(objective, lc, n)
+    index = tr_choose_index(objective, lc, n, min_leaf_samples)
+    if (missing(index)) return
     catset = categories[ord[|1 \ index|]]
     impurity = objective[index]
 }
@@ -174,11 +174,13 @@ void tr_best_split(struct targetree_model scalar model,
         if (rows(uniqrows(sort(X[, j], 1))) <= 1) continue
         trial_catset = J(0, 1, .)
         if (model.is_categorical[j]) {
-            tr_best_split_categorical(X[, j], y, trial_threshold,
+            tr_best_split_categorical(X[, j], y, model.min_samples,
+                                      trial_threshold,
                                       trial_impurity, trial_catset)
         }
         else {
-            tr_best_split_numerical(X[, j], y, trial_threshold, trial_impurity)
+            tr_best_split_numerical(X[, j], y, model.min_samples,
+                                    trial_threshold, trial_impurity)
         }
         if (missing(trial_impurity)) continue
         if (missing(best_impurity) | trial_impurity < best_impurity) {
@@ -199,7 +201,7 @@ void tr_best_final_split(struct targetree_model scalar model,
                          real colvector catset)
 {
     real scalar j, k, n, index, position, sum_y, sum_y2
-    real colvector categories, counts, totals, means
+    real colvector categories, counts, totals, totals2, means, ord
     real colvector xs, lc, ls, lsq, rc, lp, rp, objective
 
     threshold = .
@@ -207,13 +209,35 @@ void tr_best_final_split(struct targetree_model scalar model,
     if (categorical) {
         categories = uniqrows(sort(x, 1))
         k = rows(categories)
-        counts = totals = J(k, 1, 0)
+        if (k <= 1) return
+        n = rows(y)
+        counts = totals = totals2 = J(k, 1, 0)
         for (j = 1; j <= k; j++) {
             counts[j] = sum(x :== categories[j])
             totals[j] = sum(select(y, x :== categories[j]))
+            totals2[j] = sum(select(y:^2, x :== categories[j]))
         }
         means = totals :/ counts
-        catset = select(categories, means :> model.cut)
+        ord = order((means, categories), (1, 2))
+        counts = counts[ord]
+        totals = totals[ord]
+        totals2 = totals2[ord]
+        lc = runningsum(counts)[|1 \ k - 1|]
+        ls = runningsum(totals)[|1 \ k - 1|]
+        lsq = runningsum(totals2)[|1 \ k - 1|]
+        rc = J(rows(lc), 1, n) - lc
+        sum_y = sum(y)
+        sum_y2 = sum(y:^2)
+        lp = lsq :/ lc
+        rp = (J(rows(lc), 1, sum_y2) - lsq) :/ rc
+        objective = ((lp - (ls :/ lc):^2) :* lc +
+                     (rp - ((J(rows(lc), 1, sum_y) - ls) :/ rc):^2) :* rc) *
+                     (1 - model.lbd) +
+                    (-abs(J(rows(lc), 1, model.cut) - lp) :* lc -
+                     abs(J(rows(lc), 1, model.cut) - rp) :* rc) * model.lbd
+        index = tr_choose_index(objective, lc, n, model.min_samples)
+        if (missing(index)) return
+        catset = categories[ord[|1 \ index|]]
         return
     }
 
@@ -230,7 +254,8 @@ void tr_best_final_split(struct targetree_model scalar model,
                  (1 - model.lbd) +
                 (-abs(J(rows(lc), 1, model.cut) - lp) :* lc -
                  abs(J(rows(lc), 1, model.cut) - rp) :* rc) * model.lbd
-    index = tr_choose_index(objective, lc, n)
+    index = tr_choose_index(objective, lc, n, model.min_samples)
+    if (missing(index)) return
     position = lc[index]
     threshold = (xs[position] + xs[position + 1]) / 2
 }
@@ -289,26 +314,28 @@ real scalar tr_grow(struct targetree_model scalar model,
 
     if (depth == model.depth |
         rows(uniqrows(sort(y, 1))) == 1 |
-        rows(y) < model.min_samples) return(tr_add_leaf(model, y, depth))
+        rows(y) < 2 * model.min_samples) return(tr_add_leaf(model, y, depth))
 
     tr_best_split(model, X, y, feature, threshold, categorical, catset)
     if (missing(feature)) return(tr_add_leaf(model, y, depth))
     left = tr_left_mask(X[, feature], threshold, categorical, catset)
     right = !left
-    if (min((sum(left), sum(right))) < model.mmin_samples) {
+    if (min((sum(left), sum(right))) < model.min_samples) {
         return(tr_add_leaf(model, y, depth))
     }
 
-    at_leaf = depth == model.depth - 1 |
-              min((sum(left), sum(right))) < model.min_samples
+    at_leaf = depth == model.depth - 1
     if (at_leaf & model.method != "cart") {
         tr_best_final_split(model, X[, feature], y, categorical,
                             threshold, final_catset)
-        if (!categorical & missing(threshold)) return(tr_add_leaf(model, y, depth))
+        if ((!categorical & missing(threshold)) |
+            (categorical & !rows(final_catset))) {
+            return(tr_add_leaf(model, y, depth))
+        }
         catset = final_catset
         left = tr_left_mask(X[, feature], threshold, categorical, catset)
         right = !left
-        if (min((sum(left), sum(right))) < model.mmin_samples) {
+        if (min((sum(left), sum(right))) < model.min_samples) {
             return(tr_add_leaf(model, y, depth))
         }
         node = tr_add_node(model, feature, threshold, categorical, catset, depth)
@@ -338,26 +365,28 @@ real scalar tr_grow_prob(struct targetree_model scalar model,
     real colvector catset, final_catset, left, right
 
     if (depth == model.depth | min(p) > model.cut | max(p) < model.cut |
-        rows(y) < model.min_samples) return(tr_add_leaf(model, p, depth))
+        rows(y) < 2 * model.min_samples) return(tr_add_leaf(model, p, depth))
 
     tr_best_split(model, X, p, feature, threshold, categorical, catset)
     if (missing(feature)) return(tr_add_leaf(model, p, depth))
     left = tr_left_mask(X[, feature], threshold, categorical, catset)
     right = !left
-    if (min((sum(left), sum(right))) < model.mmin_samples) {
+    if (min((sum(left), sum(right))) < model.min_samples) {
         return(tr_add_leaf(model, p, depth))
     }
 
-    at_leaf = depth == model.depth - 1 |
-              min((sum(left), sum(right))) < model.min_samples
+    at_leaf = depth == model.depth - 1
     if (at_leaf & model.method != "cart") {
         tr_best_final_split(model, X[, feature], y, categorical,
                             threshold, final_catset)
-        if (!categorical & missing(threshold)) return(tr_add_leaf(model, p, depth))
+        if ((!categorical & missing(threshold)) |
+            (categorical & !rows(final_catset))) {
+            return(tr_add_leaf(model, p, depth))
+        }
         catset = final_catset
         left = tr_left_mask(X[, feature], threshold, categorical, catset)
         right = !left
-        if (min((sum(left), sum(right))) < model.mmin_samples) {
+        if (min((sum(left), sum(right))) < model.min_samples) {
             return(tr_add_leaf(model, p, depth))
         }
         node = tr_add_node(model, feature, threshold, categorical, catset, depth)
@@ -406,8 +435,8 @@ void targetree_fit_stata(string scalar depvar,
     model.cut = cut
     model.method = method
     model.feature_names = tokens(xvars)
-    model.min_samples = floor(minimum_portion * n)
-    model.mmin_samples = floor(minimum_portion * n / 3)
+    model.min_samples = max((1, ceil(minimum_portion * n)))
+    model.mmin_samples = model.min_samples
     model.is_categorical = J(1, cols(X), 0)
     if (strtrim(categorical_indices) != "") {
         catidx = strtoreal(tokens(categorical_indices))'

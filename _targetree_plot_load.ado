@@ -1,7 +1,7 @@
-*! version 0.1.2 02sep2026
+*! version 0.1.4 07sep2026
 program define _targetree_plot_load
     version 16.0
-    capture quietly mata: assert(targetree_plot_version() == 201)
+    capture quietly mata: assert(targetree_plot_version() == 202)
     if _rc {
         capture quietly mata: mata drop targetree_plot_version()
         capture quietly mata: mata drop tr_assign_positions_v2()

@@ -52,7 +52,7 @@ predict double closure_risk
 predict byte targeted, class
 targetree_risk closed
 targetree_print
-targetree_plot, title("MDFS tree")
+targetree_plot, title("MDFS tree") font_size(small) split_rule_lines(2)
 ```
 
 The one-line model command can be pasted directly into Stata's Command window.
@@ -89,7 +89,17 @@ targetree_plot, saving("tree.gph") replace
 `targetree_plot` saves Stata `.gph` files natively. It can also export formats
 supported by the local Stata installation, such as PNG, PDF, or SVG. Plot size
 is selected automatically from the tree, or can be overridden with
-`xsize()` and `ysize()`.
+`xsize()` and `ysize()`. Use `font_size()` to set one uniform Stata text size
+for all node labels and the legend. Use `split_rule_lines(1)` to keep each
+internal-node rule on one line or `split_rule_lines(2)` to place the variable
+name and condition on separate lines. For example:
+
+```stata
+targetree_plot, font_size(medsmall) split_rule_lines(2) saving("tree.pdf") replace
+```
+
+The `minimum_portion()` option is a terminal-node constraint: every terminal
+node contains at least `ceil(minimum_portion * e(N))` observations.
 
 Run `help targetree` in Stata for full command documentation.
 
@@ -110,13 +120,13 @@ findfile targetree_diabetes.dta
 use "`r(fn)'", clear
 targetree outcome pregnancies glucose bloodpressure skinthickness insulin bmi diabetespedigreefunction age, depth(3) minimum_portion(.02) method(cart) cut(.60)
 targetree_risk outcome
-targetree_plot, title("CART") name(diabetes_cart)
+targetree_plot, title("CART") name(diabetes_cart) font_size(small) split_rule_lines(2)
 targetree outcome pregnancies glucose bloodpressure skinthickness insulin bmi diabetespedigreefunction age, depth(3) minimum_portion(.02) method(mdfs) cut(.60)
 targetree_risk outcome
-targetree_plot, title("MDFS") name(diabetes_mdfs)
+targetree_plot, title("MDFS") name(diabetes_mdfs) font_size(small) split_rule_lines(2)
 targetree outcome pregnancies glucose bloodpressure skinthickness insulin bmi diabetespedigreefunction age, depth(3) minimum_portion(.02) method(pfs) lbd(.5) cut(.60)
 targetree_risk outcome
-targetree_plot, title("PFS (lambda = 0.5)") name(diabetes_pfs)
+targetree_plot, title("PFS (lambda = 0.5)") name(diabetes_pfs) font_size(small) split_rule_lines(2)
 ```
 
 The complete runnable script is
@@ -146,13 +156,13 @@ use "`r(fn)'", clear
 generate byte fire_above_5 = area > 5
 targetree fire_above_5 x y ffmc dmc dc isi temp rh wind rain, depth(3) minimum_portion(.02) method(cart) cut(.3333333333)
 targetree_risk fire_above_5
-targetree_plot, title("CART") name(forestfires_cart)
+targetree_plot, title("CART") name(forestfires_cart) font_size(small) split_rule_lines(2)
 targetree fire_above_5 x y ffmc dmc dc isi temp rh wind rain, depth(3) minimum_portion(.02) method(mdfs) cut(.3333333333)
 targetree_risk fire_above_5
-targetree_plot, title("MDFS") name(forestfires_mdfs)
+targetree_plot, title("MDFS") name(forestfires_mdfs) font_size(small) split_rule_lines(2)
 targetree fire_above_5 x y ffmc dmc dc isi temp rh wind rain, depth(3) minimum_portion(.02) method(pfs) lbd(.5) cut(.3333333333)
 targetree_risk fire_above_5
-targetree_plot, title("PFS (lambda = 0.5)") name(forestfires_pfs)
+targetree_plot, title("PFS (lambda = 0.5)") name(forestfires_pfs) font_size(small) split_rule_lines(2)
 ```
 
 The complete runnable script is
@@ -175,11 +185,11 @@ The confusion-matrix counts reproduce the Python reference implementation:
 | Dataset | Method | TP | FN | FP | TN |
 |---|---|---:|---:|---:|---:|
 | Diabetes | CART | 150 | 118 | 57 | 443 |
-| Diabetes | MDFS | 147 | 121 | 53 | 447 |
-| Diabetes | PFS (`lbd=.5`) | 158 | 110 | 61 | 439 |
-| Forest fires | CART | 38 | 113 | 26 | 340 |
-| Forest fires | MDFS | 54 | 97 | 53 | 313 |
-| Forest fires | PFS (`lbd=.5`) | 54 | 97 | 53 | 313 |
+| Diabetes | MDFS | 160 | 108 | 63 | 437 |
+| Diabetes | PFS (`lbd=.5`) | 160 | 108 | 63 | 437 |
+| Forest fires | CART | 28 | 123 | 14 | 352 |
+| Forest fires | MDFS | 53 | 98 | 55 | 311 |
+| Forest fires | PFS (`lbd=.5`) | 49 | 102 | 47 | 319 |
 
 ## Development
 

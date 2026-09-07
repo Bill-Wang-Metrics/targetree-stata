@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 0.1.3 02sep2026}{...}
+{* *! version 0.1.4 07sep2026}{...}
 {vieweralsosee "targetree postestimation" "help targetree_postestimation"}{...}
 {vieweralsosee "targetree_risk" "help targetree_risk"}{...}
 {vieweralsosee "targetree_honest" "help targetree_honest"}{...}
@@ -40,7 +40,8 @@ Observations with missing estimation variables are omitted.
 
 {phang}
 {opt minimum_portion(#)} sets the minimum fraction of the full estimation
-sample required to attempt a split. It must lie in [0,1].
+sample required in every terminal node. A candidate split is rejected unless
+both resulting child nodes meet this requirement. It must lie in [0,1].
 
 {title:Options}
 
@@ -70,13 +71,13 @@ variable; the final PFS/MDFS split uses {it:depvar}.
 
 {phang2}{cmd:. targetree closed beds margin quality, depth(4) minimum_portion(.05) method(pfs) lbd(.5) cut(.35)}
 {phang2}{cmd:. targetree_print}
-{phang2}{cmd:. targetree_plot, title("PFS tree")}
+{phang2}{cmd:. targetree_plot, title("PFS tree") font_size(medsmall) split_rule_lines(2)}
 
 {phang2}{cmd:. targetree closed beds margin quality, depth(4) minimum_portion(.05) method(mdfs) cut(.35)}
 {phang2}{cmd:. predict double closure_risk}
 {phang2}{cmd:. predict byte targeted, class}
 {phang2}{cmd:. targetree_risk closed}
-{phang2}{cmd:. targetree_plot, title("Hospital closure tree")}
+{phang2}{cmd:. targetree_plot, title("Hospital closure tree") font_size(medium) split_rule_lines(1)}
 
 {title:Stored results}
 

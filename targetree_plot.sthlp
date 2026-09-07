@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 0.1.1 01sep2026}{...}
+{* *! version 0.1.4 07sep2026}{...}
 {vieweralsosee "targetree" "help targetree"}{...}
 
 {title:Title}
@@ -11,13 +11,15 @@
 
 {p 8 17 2}
 {cmd:targetree_plot} [{cmd:,} {opt title(string)} {opt name(name)}
-{opt saving(filename)} {opt replace} {opt xsize(#)} {opt ysize(#)}]
+{opt saving(filename)} {opt replace} {opt xsize(#)} {opt ysize(#)}
+{opt font_size(size)} {opt split_rule_lines(#)}]
 
 {title:Description}
 
 {pstd}
 Draws internal splits, terminal probabilities, and terminal sample sizes with
-Stata graphics. Leaves above {cmd:e(cut)} are blue; other leaves are white.
+Stata graphics. A single font size is used for every node label and the
+legend. Leaves above {cmd:e(cut)} are blue; other leaves are white.
 
 {title:Options}
 
@@ -39,6 +41,18 @@ graph format; other suffixes are passed to {cmd:graph export}.
 {opt xsize(#)} and {opt ysize(#)} set graph dimensions in inches. If omitted,
 dimensions are selected automatically from the number of leaves and tree depth.
 
+{phang}
+{opt font_size(size)} sets one common Stata graph text size for internal-node
+rules, terminal-node statistics, and the legend. Named sizes such as
+{cmd:vsmall}, {cmd:small}, {cmd:medsmall}, and {cmd:medium}, or a numeric Stata
+size specification, are accepted. The default is {cmd:small}.
+
+{phang}
+{opt split_rule_lines(#)} controls the layout of internal-node rules. Specify
+{cmd:1} to display, for example, {cmd:x <= 1.25} on one line, or {cmd:2} to put
+the variable name and condition on separate lines. The default is {cmd:2}.
+Terminal-node statistics remain on two lines.
+
 {title:Example}
 
-{phang2}{cmd:. targetree_plot, title("MDFS tree") saving("tree.gph") replace}
+{phang2}{cmd:. targetree_plot, title("MDFS tree") font_size(medsmall) split_rule_lines(2) saving("tree.pdf") replace}

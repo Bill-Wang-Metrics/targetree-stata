@@ -1,11 +1,11 @@
-*! version 0.1.2 02sep2026
+*! version 0.1.4 07sep2026
 version 16.0
 
 mata:
 
 real scalar targetree_plot_version()
 {
-    return(201)
+    return(202)
 }
 
 real scalar tr_assign_positions_v2(struct targetree_model scalar model,
@@ -30,7 +30,7 @@ real scalar tr_assign_positions_v2(struct targetree_model scalar model,
     return(x)
 }
 
-void targetree_plot_data_stata_v2()
+void targetree_plot_data_stata_v2(real scalar split_rule_lines)
 {
     external struct targetree_model scalar targetree_current
     real scalar n, node, parent_node, counter, root_x, string_index
@@ -69,7 +69,8 @@ void targetree_plot_data_stata_v2()
         values[node, 9] = targetree_current.nodes[node, 10]
         values[node, 10] = positions[node, 2] - 0.20
         values[node, 11] = positions[node, 2] + 0.20
-        values[node, 12] = positions[node, 2] + 0.07
+        values[node, 12] = positions[node, 2] +
+                           (split_rule_lines == 2 ? 0.07 : 0)
         values[node, 13] = positions[node, 2] - 0.09
         if (targetree_current.nodes[node, 1]) {
             labels[node] = sprintf("P=%6.4f", targetree_current.nodes[node, 5])
@@ -78,12 +79,26 @@ void targetree_plot_data_stata_v2()
         else if (targetree_current.nodes[node, 4]) {
             catset = tr_node_catset(targetree_current, node)
             catlabel = invtokens(strofreal(catset'), ",")
-            labels[node] = targetree_current.feature_names[targetree_current.nodes[node, 2]]
-            sublabels[node] = sprintf("in {%s}", catlabel)
+            if (split_rule_lines == 1) {
+                labels[node] = sprintf("%s in {%s}",
+                    targetree_current.feature_names[targetree_current.nodes[node, 2]],
+                    catlabel)
+            }
+            else {
+                labels[node] = targetree_current.feature_names[targetree_current.nodes[node, 2]]
+                sublabels[node] = sprintf("in {%s}", catlabel)
+            }
         }
         else {
-            labels[node] = targetree_current.feature_names[targetree_current.nodes[node, 2]]
-            sublabels[node] = sprintf("<= %7.4f", targetree_current.nodes[node, 3])
+            if (split_rule_lines == 1) {
+                labels[node] = sprintf("%s <= %7.4f",
+                    targetree_current.feature_names[targetree_current.nodes[node, 2]],
+                    targetree_current.nodes[node, 3])
+            }
+            else {
+                labels[node] = targetree_current.feature_names[targetree_current.nodes[node, 2]]
+                sublabels[node] = sprintf("<= %7.4f", targetree_current.nodes[node, 3])
+            }
         }
     }
 

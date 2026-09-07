@@ -1,8 +1,8 @@
 v 3
 d targetree: Threshold-focused classification trees with PFS and MDFS
 d
-d Version: 0.1.3
-d Distribution-Date: 20260902
+d Version: 0.1.4
+d Distribution-Date: 20260907
 d Requires: Stata version 16
 d Author: Lei Bill Wang and targetree contributors
 d Support: https://github.com/Bill-Wang-Metrics/targetree-stata/issues
