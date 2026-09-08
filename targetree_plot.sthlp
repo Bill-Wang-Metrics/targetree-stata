@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 0.1.5 08sep2026}{...}
+{* *! version 0.1.6 08sep2026}{...}
 {vieweralsosee "targetree" "help targetree"}{...}
 
 {title:Title}
@@ -50,8 +50,9 @@ size specification, are accepted. The default is {cmd:medsmall}.
 
 {phang}
 {opt split_rule_lines(#)} controls the layout of internal-node rules. Specify
-{cmd:1} to display, for example, {cmd:x <= 1.25} on one line, or {cmd:2} to put
-the variable name and condition on separate lines. The default is {cmd:2}.
+{cmd:1} to display, for example, {cmd:x} {&le} {cmd:1.25} on one line, or
+{cmd:2} to put the variable name and condition on separate lines. The default
+is {cmd:2}.
 Terminal-node statistics remain on two lines.
 
 {title:Example}

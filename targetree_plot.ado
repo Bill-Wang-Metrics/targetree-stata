@@ -1,4 +1,4 @@
-*! version 0.1.5 08sep2026
+*! version 0.1.6 08sep2026
 program define targetree_plot
     version 16.0
     syntax [, TITLE(string asis) NAME(name) SAVING(string) REPLACE ///
@@ -70,7 +70,7 @@ program define targetree_plot
             mlabel(tr_sublabel) mlabposition(0) mlabcolor(white) mlabsize(`font_size')), ///
         xscale(range(`xmin' `xmax') off) yscale(range(`ymin' `ymax') off) ///
         xlabel(none, nogrid) ylabel(none, nogrid) xtitle("") ytitle("") ///
-        legend(order(3 "P <= `cut_text'" 4 "P > `cut_text'") rows(1) ///
+        legend(order(3 "{&mu} {&le} `cut_text'" 4 "{&mu} > `cut_text'") rows(1) ///
             position(6) ring(1) size(`font_size') ///
             region(lcolor(none) fcolor(none))) ///
         plotregion(margin(small) color(white) lcolor(none)) ///

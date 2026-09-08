@@ -1,11 +1,11 @@
-*! version 0.1.5 08sep2026
+*! version 0.1.6 08sep2026
 version 16.0
 
 mata:
 
 real scalar targetree_plot_version()
 {
-    return(203)
+    return(204)
 }
 
 real scalar tr_assign_positions_v2(struct targetree_model scalar model,
@@ -73,7 +73,7 @@ void targetree_plot_data_stata_v2(real scalar split_rule_lines)
                            (split_rule_lines == 2 ? 0.11 : 0)
         values[node, 13] = positions[node, 2] - 0.13
         if (targetree_current.nodes[node, 1]) {
-            labels[node] = sprintf("P=%6.4f", targetree_current.nodes[node, 5])
+            labels[node] = sprintf("{&mu}=%6.4f", targetree_current.nodes[node, 5])
             sublabels[node] = sprintf("N=%g", targetree_current.nodes[node, 6])
         }
         else if (targetree_current.nodes[node, 4]) {
@@ -91,13 +91,13 @@ void targetree_plot_data_stata_v2(real scalar split_rule_lines)
         }
         else {
             if (split_rule_lines == 1) {
-                labels[node] = sprintf("%s <= %7.4f",
+                labels[node] = sprintf("%s {&le} %7.4f",
                     targetree_current.feature_names[targetree_current.nodes[node, 2]],
                     targetree_current.nodes[node, 3])
             }
             else {
                 labels[node] = targetree_current.feature_names[targetree_current.nodes[node, 2]]
-                sublabels[node] = sprintf("<= %7.4f", targetree_current.nodes[node, 3])
+                sublabels[node] = sprintf("{&le} %7.4f", targetree_current.nodes[node, 3])
             }
         }
     }

@@ -95,7 +95,8 @@ for clear contrast. Use `font_size()` to set one uniform Stata text size for
 all node labels and the legend; the default is `medsmall`. Use
 `split_rule_lines(1)` to keep each internal-node rule on one line or
 `split_rule_lines(2)` to place the variable name and condition on separate
-lines. For example:
+lines. Numerical rules use the mathematical symbol `≤`, and terminal nodes
+report their mean as `μ`. For example:
 
 ```stata
 targetree_plot, font_size(medsmall) split_rule_lines(2) saving("tree.pdf") replace
