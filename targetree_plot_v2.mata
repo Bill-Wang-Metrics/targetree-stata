@@ -1,11 +1,11 @@
-*! version 0.1.4 07sep2026
+*! version 0.1.5 08sep2026
 version 16.0
 
 mata:
 
 real scalar targetree_plot_version()
 {
-    return(202)
+    return(203)
 }
 
 real scalar tr_assign_positions_v2(struct targetree_model scalar model,
@@ -67,11 +67,11 @@ void targetree_plot_data_stata_v2(real scalar split_rule_lines)
                           targetree_current.nodes[node, 5] > targetree_current.cut : 0
         values[node, 8] = node
         values[node, 9] = targetree_current.nodes[node, 10]
-        values[node, 10] = positions[node, 2] - 0.20
-        values[node, 11] = positions[node, 2] + 0.20
+        values[node, 10] = positions[node, 2] - 0.30
+        values[node, 11] = positions[node, 2] + 0.30
         values[node, 12] = positions[node, 2] +
-                           (split_rule_lines == 2 ? 0.07 : 0)
-        values[node, 13] = positions[node, 2] - 0.09
+                           (split_rule_lines == 2 ? 0.11 : 0)
+        values[node, 13] = positions[node, 2] - 0.13
         if (targetree_current.nodes[node, 1]) {
             labels[node] = sprintf("P=%6.4f", targetree_current.nodes[node, 5])
             sublabels[node] = sprintf("N=%g", targetree_current.nodes[node, 6])

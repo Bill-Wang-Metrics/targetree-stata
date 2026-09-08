@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 0.1.4 07sep2026}{...}
+{* *! version 0.1.5 08sep2026}{...}
 {vieweralsosee "targetree" "help targetree"}{...}
 
 {title:Title}
@@ -19,7 +19,8 @@
 {pstd}
 Draws internal splits, terminal probabilities, and terminal sample sizes with
 Stata graphics. A single font size is used for every node label and the
-legend. Leaves above {cmd:e(cut)} are blue; other leaves are white.
+legend. Node boxes are generously sized for legibility. Leaves above
+{cmd:e(cut)} use a dark blue fill with white text; other leaves are white.
 
 {title:Options}
 
@@ -45,7 +46,7 @@ dimensions are selected automatically from the number of leaves and tree depth.
 {opt font_size(size)} sets one common Stata graph text size for internal-node
 rules, terminal-node statistics, and the legend. Named sizes such as
 {cmd:vsmall}, {cmd:small}, {cmd:medsmall}, and {cmd:medium}, or a numeric Stata
-size specification, are accepted. The default is {cmd:small}.
+size specification, are accepted. The default is {cmd:medsmall}.
 
 {phang}
 {opt split_rule_lines(#)} controls the layout of internal-node rules. Specify

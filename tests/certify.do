@@ -76,7 +76,7 @@ targetree_plot, title("Certification tree") name(targetree_certify) ///
     font_size(medsmall) split_rule_lines(2) ///
     saving("`graph_file'.gph") replace
 targetree_plot, title("One-line certification tree") ///
-    name(targetree_certify_one_line) font_size(small) split_rule_lines(1)
+    name(targetree_certify_one_line) split_rule_lines(1)
 
 capture noisily targetree_plot, split_rule_lines(3)
 assert _rc == 198

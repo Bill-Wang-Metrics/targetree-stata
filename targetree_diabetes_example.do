@@ -9,7 +9,7 @@ local predictors pregnancies glucose bloodpressure skinthickness insulin bmi ///
     diabetespedigreefunction age
 local depth 3
 local cut .60
-local plot_font_size small
+local plot_font_size medsmall
 local split_rule_lines 2
 
 * Standard CART from the Python empirical example.

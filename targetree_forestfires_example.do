@@ -9,7 +9,7 @@ generate byte fire_above_5 = area > 5
 label variable fire_above_5 "Burned area exceeds 5 hectares"
 local predictors x y ffmc dmc dc isi temp rh wind rain
 local cut = 1 / 3
-local plot_font_size small
+local plot_font_size medsmall
 local split_rule_lines 2
 
 * Standard CART from the Python empirical example.

@@ -1,4 +1,4 @@
-*! version 0.1.4 07sep2026
+*! version 0.1.5 08sep2026
 program define targetree_plot
     version 16.0
     syntax [, TITLE(string asis) NAME(name) SAVING(string) REPLACE ///
@@ -23,11 +23,11 @@ program define targetree_plot
         exit 198
     }
     local font_size = strtrim("`font_size'")
-    if "`font_size'" == "" local font_size "small"
+    if "`font_size'" == "" local font_size "medsmall"
 
     local cut_text = strtrim(string(e(cut), "%6.3g"))
-    if `xsize' <= 0 local xsize = max(9, min(16, 1.25 * e(nleaves) + 1.75))
-    if `ysize' <= 0 local ysize = max(6, min(12, 1.60 * (e(depth) + 1)))
+    if `xsize' <= 0 local xsize = max(10, min(24, 1.50 * e(nleaves) + 1.80))
+    if `ysize' <= 0 local ysize = max(6.5, min(14, 1.80 * (e(depth) + 1)))
 
     preserve
     clear
@@ -48,12 +48,14 @@ program define targetree_plot
     twoway ///
         (pcspike tr_y tr_x tr_py tr_px if tr_parent, ///
             lcolor(gs9) lwidth(medthin)) ///
-        (rbar tr_box_lo tr_box_hi tr_x if !tr_leaf, barwidth(.86) ///
-            bcolor(gs14) lcolor(gs8) lwidth(medthin)) ///
+        (rbar tr_box_lo tr_box_hi tr_x if !tr_leaf, barwidth(.96) ///
+            bcolor(gs14) lcolor(gs7) lwidth(medium)) ///
         (rbar tr_box_lo tr_box_hi tr_x if tr_leaf & !tr_positive, ///
-            barwidth(.86) bcolor(gs15) lcolor(gs7) lwidth(medthin)) ///
+            barwidth(.96) bcolor("248 248 248") lcolor("64 64 64") ///
+            lwidth(medium)) ///
         (rbar tr_box_lo tr_box_hi tr_x if tr_leaf & tr_positive, ///
-            barwidth(.86) bcolor(eltblue) lcolor(ebblue) lwidth(medthin)) ///
+            barwidth(.96) bcolor("68 114 196") lcolor("31 78 121") ///
+            lwidth(medium)) ///
         (scatter tr_label_y tr_x if !tr_leaf, msymbol(none) ///
             mlabel(tr_label) mlabposition(0) mlabcolor(gs2) mlabsize(`font_size')) ///
         (scatter tr_sub_y tr_x if !tr_leaf, msymbol(none) ///
