@@ -69,16 +69,6 @@ Do-file Editor; do not submit their lines separately in the Command window.
 | `pfs` | 0 | A threshold-focused final split with a researcher-selected weight, `lbd()` |
 | `mdfs` | 1 | A fully threshold-focused final split |
 
-## Categorical predictors
-
-Stata stores categorical values as numeric codes. Include their variable names
-in `categorical()` so that targetree searches over category subsets instead of
-numeric cut points. Encode string variables first if needed.
-
-```stata
-encode region_name, generate(region)
-targetree closed beds margin region, depth(4) minimum_portion(.05) method(mdfs) cut(.35) categorical(region)
-```
 
 
 ## Tree output
