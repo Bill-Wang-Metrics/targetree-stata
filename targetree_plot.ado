@@ -1,4 +1,4 @@
-*! version 0.1.6 08sep2026
+*! version 0.1.7 08sep2026
 program define targetree_plot
     version 16.0
     syntax [, TITLE(string asis) NAME(name) SAVING(string) REPLACE ///
@@ -32,6 +32,9 @@ program define targetree_plot
     preserve
     clear
     mata: targetree_plot_data_stata_v2(`split_rule_lines')
+    tempvar tr_inner_lo tr_inner_hi
+    generate double `tr_inner_lo' = tr_box_lo + .025
+    generate double `tr_inner_hi' = tr_box_hi - .025
     quietly summarize tr_x, meanonly
     local xmin = r(min) - 0.65
     local xmax = r(max) + 0.65
@@ -49,13 +52,16 @@ program define targetree_plot
         (pcspike tr_y tr_x tr_py tr_px if tr_parent, ///
             lcolor(gs9) lwidth(medthin)) ///
         (rbar tr_box_lo tr_box_hi tr_x if !tr_leaf, barwidth(.96) ///
-            bcolor(gs14) lcolor(gs7) lwidth(medium)) ///
+            bcolor(gs14) lcolor("80 80 80") lwidth(thick)) ///
         (rbar tr_box_lo tr_box_hi tr_x if tr_leaf & !tr_positive, ///
-            barwidth(.96) bcolor("248 248 248") lcolor("64 64 64") ///
-            lwidth(medium)) ///
+            barwidth(.98) bcolor("64 64 64") lcolor("64 64 64") ///
+            lwidth(thin)) ///
+        (rbar `tr_inner_lo' `tr_inner_hi' tr_x if tr_leaf & !tr_positive, ///
+            barwidth(.94) bcolor("248 248 248") lcolor("248 248 248") ///
+            lwidth(thin)) ///
         (rbar tr_box_lo tr_box_hi tr_x if tr_leaf & tr_positive, ///
-            barwidth(.96) bcolor("68 114 196") lcolor("31 78 121") ///
-            lwidth(medium)) ///
+            barwidth(.96) bcolor("68 114 196") lcolor("22 55 95") ///
+            lwidth(thick)) ///
         (scatter tr_label_y tr_x if !tr_leaf, msymbol(none) ///
             mlabel(tr_label) mlabposition(0) mlabcolor(gs2) mlabsize(`font_size')) ///
         (scatter tr_sub_y tr_x if !tr_leaf, msymbol(none) ///
@@ -70,7 +76,7 @@ program define targetree_plot
             mlabel(tr_sublabel) mlabposition(0) mlabcolor(white) mlabsize(`font_size')), ///
         xscale(range(`xmin' `xmax') off) yscale(range(`ymin' `ymax') off) ///
         xlabel(none, nogrid) ylabel(none, nogrid) xtitle("") ytitle("") ///
-        legend(order(3 "{&mu} {&le} `cut_text'" 4 "{&mu} > `cut_text'") rows(1) ///
+        legend(order(4 "{&mu} {&le} `cut_text'" 5 "{&mu} > `cut_text'") rows(1) ///
             position(6) ring(1) size(`font_size') ///
             region(lcolor(none) fcolor(none))) ///
         plotregion(margin(small) color(white) lcolor(none)) ///

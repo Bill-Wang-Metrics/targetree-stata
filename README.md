@@ -91,8 +91,10 @@ supported by the local Stata installation, such as PNG, PDF, or SVG. Plot size
 is selected automatically from the tree, or can be overridden with
 `xsize()` and `ysize()`. The default node boxes and graph dimensions provide
 more room for labels, and targeted leaves use a dark blue fill with white text
-for clear contrast. Use `font_size()` to set one uniform Stata text size for
-all node labels and the legend; the default is `medsmall`. Use
+for clear contrast. Every node has a dark, visible frame so that light boxes
+remain distinct after resizing or printing. Use `font_size()` to set one
+uniform Stata text size for all node labels and the legend; the default is
+`medsmall`. Use
 `split_rule_lines(1)` to keep each internal-node rule on one line or
 `split_rule_lines(2)` to place the variable name and condition on separate
 lines. Numerical rules use the mathematical symbol `≤`, and terminal nodes
