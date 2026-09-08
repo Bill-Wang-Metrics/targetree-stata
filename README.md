@@ -1,40 +1,37 @@
 # targetree for Stata
 
-Native Stata/Mata implementation of classification trees with **PFS**
-(Penalized Final Split) and **MDFS** (Maximum Distance Final Split), designed
-for threshold-focused binary classification.
+`targetree` helps applied researchers construct interpretable targeting rules
+for binary outcomes. For example, it can identify groups whose estimated risk
+of hospital closure, loan denial, financial distress, or another adverse event
+exceeds a policy threshold chosen by the researcher.
 
-This repository ports the functionality of the Python
-[`targetree`](https://github.com/lhy-0594/targetree) package to Stata. It has
-no Python or community-package dependencies and supports Stata 16 or newer.
+The package fits classification trees using CART, Penalized Final Split (PFS),
+or Maximum Distance Final Split (MDFS). It reports predicted risks and
+targeting classifications, evaluates the resulting policy, and draws a tree
+diagram that can be saved for papers or presentations. It requires Stata 16 or
+newer and does not require Python or any community-contributed Stata package.
 
 ## Installation
 
-While this repository is private, clone it and install from the local clone:
-
-```bash
-git clone git@github.com:Bill-Wang-Metrics/targetree-stata.git
-```
-
-Then run in Stata, replacing the path with the location of your clone:
-
-```stata
-net install targetree, from("/path/to/targetree-stata") replace
-```
-
-For development, you can load the cloned directory without installing:
-
-```stata
-adopath ++ "/path/to/targetree-stata"
-```
-
-If the repository becomes public, direct installation will work with:
+Copy this command into Stata's Command window:
 
 ```stata
 net install targetree, from("https://raw.githubusercontent.com/Bill-Wang-Metrics/targetree-stata/main") replace
 ```
 
+Then open the package documentation:
+
+```stata
+help targetree
+```
+
+To update the package later, run the same `net install` command again with the
+`replace` option.
+
 ## Quick start
+
+The example below creates a binary outcome named `closed`, fits an MDFS tree,
+and evaluates and plots the resulting targeting policy:
 
 ```stata
 clear
@@ -55,6 +52,11 @@ targetree_print
 targetree_plot, title("MDFS tree") font_size(medsmall) split_rule_lines(2)
 ```
 
+Here, `cut(.30)` targets terminal groups with an estimated outcome probability
+above 0.30. `depth(4)` sets the maximum tree depth, while
+`minimum_portion(.05)` requires every terminal group to contain at least 5% of
+the estimation sample.
+
 The one-line model command can be pasted directly into Stata's Command window.
 Examples that use `///` for line continuation must be run together from the
 Do-file Editor; do not submit their lines separately in the Command window.
@@ -63,9 +65,9 @@ Do-file Editor; do not submit their lines separately in the Command window.
 
 | `method()` | Default `lbd()` | Description |
 |---|---:|---|
-| `cart` | 0 | Standard CART impurity splitting |
-| `pfs` | 0 | Penalized Final Split with user-selected `lbd()` |
-| `mdfs` | 1 | Maximum Distance Final Split |
+| `cart` | 0 | Standard CART splitting; the targeting threshold is applied after the tree is fitted |
+| `pfs` | 0 | A threshold-focused final split with a researcher-selected weight, `lbd()` |
+| `mdfs` | 1 | A fully threshold-focused final split |
 
 ## Categorical predictors
 
@@ -110,17 +112,26 @@ node contains at least `ceil(minimum_portion * e(N))` observations.
 
 Run `help targetree` in Stata for full command documentation.
 
-## Replicating the Python empirical examples
+## Worked examples
 
-The package includes Stata-native copies of the two datasets used in
-`empirical_new.ipynb`. These examples use the same outcomes, predictors,
-thresholds, depths, and minimum-portion settings as the Python workflow.
+The installation includes diabetes and forest-fire datasets and complete
+example scripts. They use the same outcomes, predictors, thresholds, depths,
+and minimum-node settings as the corresponding Python examples.
 
 ### Diabetes
 
 This example uses the 768-observation Pima Indians diabetes data, sets
 `Outcome` as the binary target, and uses `cut = 0.60` with depth 3. The PFS
 model uses `lbd(.5)`, matching `lbd=0.5` in the Python notebook.
+
+Run the complete example after installing `targetree`:
+
+```stata
+findfile targetree_diabetes_example.do
+do "`r(fn)'"
+```
+
+The individual CART, MDFS, and PFS commands are shown below.
 
 ```stata
 findfile targetree_diabetes.dta
@@ -156,6 +167,15 @@ Diabetes PFS tree (`lbd = 0.5`):
 This example uses the 517-observation forest-fires data, defines the target as
 `area > 5`, and uses `cut = 1/3` with depth 3. As above, PFS uses
 `lbd(.5)`.
+
+Run the complete example after installing `targetree`:
+
+```stata
+findfile targetree_forestfires_example.do
+do "`r(fn)'"
+```
+
+The individual CART, MDFS, and PFS commands are shown below.
 
 ```stata
 findfile targetree_forestfires.dta
@@ -198,10 +218,9 @@ The confusion-matrix counts reproduce the Python reference implementation:
 | Forest fires | MDFS | 53 | 98 | 55 | 311 |
 | Forest fires | PFS (`lbd=.5`) | 49 | 102 | 47 | 319 |
 
-## Development
+## Getting help
 
-Run the certification suite in batch mode or from Stata:
-
-```stata
-do tests/certify.do
-```
+Use `help targetree` for the model syntax and links to prediction, evaluation,
+printing, honest estimation, and plotting commands. Questions and bug reports
+can be submitted through the repository's
+[Issues page](https://github.com/Bill-Wang-Metrics/targetree-stata/issues).
