@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 0.1.7 08sep2026}{...}
+{* *! version 0.1.8 08sep2026}{...}
 {vieweralsosee "targetree" "help targetree"}{...}
 
 {title:Title}
@@ -22,7 +22,8 @@ Stata graphics. A single font size is used for every node label and the
 legend. Node boxes are generously sized for legibility. Leaves above
 {cmd:e(cut)} use a dark blue fill with white text; other leaves are white.
 All nodes have a clearly visible frame so that light boxes remain distinct
-when the graph is resized or printed.
+when the graph is resized or printed. The legend keys use the same framed
+appearance as the corresponding terminal nodes.
 
 {title:Options}
 

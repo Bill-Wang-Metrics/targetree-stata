@@ -92,7 +92,8 @@ is selected automatically from the tree, or can be overridden with
 `xsize()` and `ysize()`. The default node boxes and graph dimensions provide
 more room for labels, and targeted leaves use a dark blue fill with white text
 for clear contrast. Every node has a dark, visible frame so that light boxes
-remain distinct after resizing or printing. Use `font_size()` to set one
+remain distinct after resizing or printing, and the legend keys retain the
+same framed appearance. Use `font_size()` to set one
 uniform Stata text size for all node labels and the legend; the default is
 `medsmall`. Use
 `split_rule_lines(1)` to keep each internal-node rule on one line or
